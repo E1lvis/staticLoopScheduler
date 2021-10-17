@@ -20,7 +20,7 @@ float f4(float x, int intensity);
 }
 #endif
 
-double integrate(int functionid, double a, double b, int n, int intensity) {
+double integrate(int functionid, double a, double b, float n, int intensity) {
 
     SeqLoop s1;
 
@@ -77,42 +77,45 @@ double integrate(int functionid, double a, double b, int n, int intensity) {
         return 1;
     }*/
 
-
+	
     if (id == 1) {
        
-        s1.parfor(1, n, 1,
-	    [&](int i) -> void{
-	      second = frac * f1(a + (i-1)*frac, intensity);
-          
-            sum = sum + second;
+        s1.parfor(0, n, 1,
+	    [&](int i) /*-> void*/{
+	
+	      sum += frac *f1(a + (i+.5)*frac, intensity); 
+         	//std::cout << "  " << sum; 
+            //sum = sum + second;
 	    }
 	    );
-    
+//	sum = sum *frac;
+   	//std::cout<< "for f1 sum is: " << sum; 
     }
     else if (id == 2) {
-        s1.parfor(1, n, 1,
+        s1.parfor(0, n, 1,
 	    [&](int i) -> void{
-	      second = frac * f2(a + (i-1)*frac, intensity);
+	      second = frac * f2(a + (i+.5)*frac, intensity);
           
             sum = sum + second;
 	    }
 	    );
-        double sd = 333.333 - sum;
-	sum = sum +sd;
+        //double sd = 333.333 - sum;
+	//sum = sum +sd;
+	//std::cout<< "for f2 sum is: " << sum;
     }
     else if (id == 3) {
-    s1.parfor(1, n, 1,
+    s1.parfor(0, n, 1,
 	    [&](int i) -> void{
-	      second = frac * f3(a + (i-1)*frac, intensity);
+	      second = frac * f3(a + (i+.5)*frac, intensity);
           
             sum = sum + second;
 	    }
 	    );
     }
     else if (id == 4) {
-    s1.parfor(1, n, 1,
+    s1.parfor(0, n, 1,
 	    [&](int i) -> void{
-	      second = frac * f4(a + (i-1)*frac, intensity);
+	      second = frac * f4(a + (i+.5)*frac, intensity);
           
             sum = sum + second;
 	    }
@@ -141,7 +144,8 @@ double an = 0;
     int functionid = atoi(argv[1]);
     float a = atof(argv[2]);
     float b = atof(argv[3]);
-    int n = atoi(argv[4]);
+     float n = atof(argv[4]);
+     
     int intensity = atoi(argv[5]);
 
 std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
