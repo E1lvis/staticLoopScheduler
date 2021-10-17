@@ -5,7 +5,7 @@
 #include <chrono>
 #include <cmath>
 
-#include "seqLoop.cpp"
+#include "seq_loop.hpp"
 //this our maion file to turn in with so use this one to add and stuff
 #ifdef __cplusplus
 extern "C" {
