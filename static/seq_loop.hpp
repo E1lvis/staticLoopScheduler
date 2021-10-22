@@ -1,5 +1,6 @@
 #ifndef __SEQ_LOOP_H
 #define __SEQ_LOOP_H
+#include <thread>
 
 #include <functional>
 
@@ -35,6 +36,10 @@ public:
   ///
   /// Once the iterations are complete, each thread will execute after
   /// on the TLS object. No two thread can execute after at the same time.
+  //youre threading should be done in here 
+  //tls will need to go into an array
+  std::vector<std::thread> mythreads;
+
   template<typename TLS>
   void parfor (size_t beg, size_t end, size_t increment,
 	       std::function<void(TLS&)> before,
@@ -44,7 +49,7 @@ public:
     TLS tls;
     before(tls);    
     for (size_t i=beg; i<end; i+= increment) {
-      f(i, tls);
+      std::thread mythread(f(i, tls));
     }
     after(tls);
   }

@@ -21,9 +21,14 @@ float f4(float x, int intensity);
 }
 #endif
 
+float integrateFunction(float (*f)(float, int), double frac, double a, int i, int intensity ){
+  return frac *f(a + (i+.5)*frac, intensity);
+}
+
 void integrateFunction(float (*f)(float, int), double frac, double a, int i, int intensity, float& valueToChange ){
   valueToChange = frac *f(a + (i+.5)*frac, intensity);
 }
+
 double integrate(int functionid, double a, double b, int n, int intensity) {
 
     SeqLoop s1;
@@ -294,7 +299,8 @@ std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_c
 
 //an = integrate(functionid, a, b, n, intensity);
 an = integrate2(functionid, a, b, n, intensity, nThreads);
- /* double testVariable = 0;
+double testVariable = 0;
+ /* 
   int iterationCount = 0;
   int threadNumber = 0;
   bool extraThreadNeeded = false;
@@ -317,25 +323,25 @@ an = integrate2(functionid, a, b, n, intensity, nThreads);
 
     //aray to add all the results from iterations
     double results[100];
-
+*/
     double sum = 0;
-     s1.parfor<int>(0, n, 1,
-		 [&](int& tls) -> void{
-		    tls = 0;
-       
+     s1.parfor<float>(0, n, 1,
+		 [&](float& tls) -> void{
+		   tls = 0;
 		 },
 		 [&](int i, float tls) -> void{
 		   //tls +=frac *functionInUse(a + (i+.5)*frac, intensity); 
        //tls += integrateFunction(*functionInUse, frac, a, i, intensity);
        //results[i] =  std::thread mythread(integrateFunction, f1, ((b-a)/n), a, i , intensity);
-       std::thread mythreads(integrateFunction,f1, ((b-a)/n), a, i , intensity, testVariable );
+       tls += integrateFunction (f1, ((b-a)/n), a, i , intensity);
+       std::cout<< "tls is equal to " << tls;
        //tls += 
       // double value = std::thread mythread(integrateFunction, *functionInUse, frac, a, i, intensity);
 		  },
-		 [&](int tls) -> void{
+		 [&](float tls) -> void{
 		   sum += testVariable;
 		 }
-		 );*/
+		 );
 
 std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
@@ -344,7 +350,10 @@ std::chrono::duration<double> elapsed_seconds = end-start;
 std::cout << an << std::endl;
 
 std::cerr<<elapsed_seconds.count()<<std::endl;
-
+//quesions
+//how to make the tls object a float or double
+//trouble passing in values in thread, value must be invocable error gotten
+//cant really think of anythong else rn gl :)
   return 0;
 }
 
