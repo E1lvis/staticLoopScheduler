@@ -328,12 +328,12 @@ an = integrate2(functionid, a, b, n, intensity, nThreads);
 		   //tls +=frac *functionInUse(a + (i+.5)*frac, intensity); 
        //tls += integrateFunction(*functionInUse, frac, a, i, intensity);
        //results[i] =  std::thread mythread(integrateFunction, f1, ((b-a)/n), a, i , intensity);
-       std::thread mythreads(integrateFunction,f1, ((b-a)/n), a, i , intensity, tls );
+       std::thread mythreads(integrateFunction,f1, ((b-a)/n), a, i , intensity, testVariable );
        //tls += 
       // double value = std::thread mythread(integrateFunction, *functionInUse, frac, a, i, intensity);
 		  },
 		 [&](int tls) -> void{
-		   sum += tls;
+		   sum += testVariable;
 		 }
 		 );
 
@@ -341,7 +341,7 @@ std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clo
 
 std::chrono::duration<double> elapsed_seconds = end-start;
 
-std::cout << an << std::endl;
+std::cout << sum << std::endl;
 
 std::cerr<<elapsed_seconds.count()<<std::endl;
 
