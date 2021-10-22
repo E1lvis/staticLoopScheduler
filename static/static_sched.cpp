@@ -294,7 +294,7 @@ std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_c
 
 //an = integrate(functionid, a, b, n, intensity);
 an = integrate2(functionid, a, b, n, intensity, nThreads);
-  double testVariable = 0;
+ /* double testVariable = 0;
   int iterationCount = 0;
   int threadNumber = 0;
   bool extraThreadNeeded = false;
@@ -335,13 +335,13 @@ an = integrate2(functionid, a, b, n, intensity, nThreads);
 		 [&](int tls) -> void{
 		   sum += testVariable;
 		 }
-		 );
+		 );*/
 
 std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
 std::chrono::duration<double> elapsed_seconds = end-start;
 
-std::cout << sum << std::endl;
+std::cout << an << std::endl;
 
 std::cerr<<elapsed_seconds.count()<<std::endl;
 
