@@ -21,8 +21,8 @@ float f4(float x, int intensity);
 }
 #endif
 
-float integrateFunction(float (*f)(float, int), double frac, double a, int i, int intensity ){
-  return frac *f(a + (i+.5)*frac, intensity);
+void integrateFunction(float (*f)(float, int), double frac, double a, int i, int intensity, float& valueToChange ){
+  valueToChange = frac *f(a + (i+.5)*frac, intensity);
 }
 double integrate(int functionid, double a, double b, int n, int intensity) {
 
@@ -171,18 +171,16 @@ double integrate2(int functionid, double a, double b, int n, int intensity, int 
     }
      
 	
-  /*  if (id == 1) {
+  if (id == 1) {
        
-        s1.parfor(0, n, 1,
-	    [&](int i) /*-> void{
-	
-	      sum += frac *f1(a + (i+.5)*frac, intensity); 
-         	//std::cout << "  " << sum; 
-            //sum = sum + second;
+       s1.parfor(0, n, 1,
+	    [&](int i) -> void{
+	      second = frac * f1(a + (i+.5)*frac, intensity);
+          
+            sum = sum + second;
 	    }
 	    );
-//	sum = sum *frac;
-   	//std::cout<< "for f1 sum is: " << sum; 
+	    
     }
     else if (id == 2) {
         s1.parfor(0, n, 1,
@@ -217,7 +215,7 @@ double integrate2(int functionid, double a, double b, int n, int intensity, int 
     else {
         
         return 1;
-    }*/
+    }
     //my questions
     //is this on the right track so far? 
     //how do threads get implemented here
@@ -228,7 +226,11 @@ double integrate2(int functionid, double a, double b, int n, int intensity, int 
     // once the thread reaches the limit make or new or close it and create idk yet
     //that should be it but we need to figure out where we are creating the threads
     // and what the tls object is for
-    bool extraThreadNeeded = false;
+    
+    // are we supposed to be running the construct outside of the function
+    // how do we integrate threads 
+    // we arent updating the variable outside the construct or tls inside the construct
+   /* bool extraThreadNeeded = false;
     int numberOfIterations = n / numberOfThreads;
     int extraIterations = 0;
     int threadsToUse = numberOfThreads;
@@ -247,19 +249,20 @@ double integrate2(int functionid, double a, double b, int n, int intensity, int 
     sum = 0;
      s1.parfor<int>(0, n, 1,
 		 [&](int& tls) -> void{
-		   tls = 0;
+		    tls = 0;
        
 		 },
-		 [&](int i, int& tls) -> void{
-		   //tls +=frac *functionInUse(a + (i+.5)*frac, intensity); 
-       tls += integrateFunction(*functionInUse, frac, a, i, intensity);
+		 [&](int i, float tls) -> void{
+		   tls +=frac *functionInUse(a + (i+.5)*frac, intensity); 
+       //tls += integrateFunction(*functionInUse, frac, a, i, intensity);
+       
        //tls += 
       // double value = std::thread mythread(integrateFunction, *functionInUse, frac, a, i, intensity);
 		  },
 		 [&](int tls) -> void{
 		   sum += tls;
 		 }
-		 );
+		 );*/
 
     return sum;
 
@@ -271,6 +274,7 @@ double integrate2(int functionid, double a, double b, int n, int intensity, int 
 
 
 int main (int argc, char* argv[]) {
+SeqLoop s1;
 
 double an = 0;
 
@@ -290,14 +294,57 @@ std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_c
 
 //an = integrate(functionid, a, b, n, intensity);
 an = integrate2(functionid, a, b, n, intensity, nThreads);
+  double testVariable = 0;
+  int iterationCount = 0;
+  int threadNumber = 0;
+  bool extraThreadNeeded = false;
+  //number of iterations each thread should do
+    int numberOfIterations = n / nThreads;
+  //if there are uneven iterations then we add those here
+    int extraIterations = 0;
+    int threadsToUse = nThreads;
+    if( n % nThreads != 0){
+     extraIterations = n % nThreads;
+     extraThreadNeeded = true;
+
+    }
+    
+    if (extraThreadNeeded){
+      threadsToUse += 1;
+    }
+    std::vector<std::thread> mythreads (threadsToUse);
+   // mythreads.at(0) = std::thread(integrateFunction, f1, ((b-a/n)), a, i, intensity);
+
+    //aray to add all the results from iterations
+    double results[100];
+
+    double sum = 0;
+     s1.parfor<int>(0, n, 1,
+		 [&](int& tls) -> void{
+		    tls = 0;
+       
+		 },
+		 [&](int i, float tls) -> void{
+		   //tls +=frac *functionInUse(a + (i+.5)*frac, intensity); 
+       //tls += integrateFunction(*functionInUse, frac, a, i, intensity);
+       //results[i] =  std::thread mythread(integrateFunction, f1, ((b-a)/n), a, i , intensity);
+       std::thread mythreads(integrateFunction,f1, ((b-a)/n), a, i , intensity, tls );
+       //tls += 
+      // double value = std::thread mythread(integrateFunction, *functionInUse, frac, a, i, intensity);
+		  },
+		 [&](int tls) -> void{
+		   sum += tls;
+		 }
+		 );
 
 std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
 std::chrono::duration<double> elapsed_seconds = end-start;
 
-std::cout << an << std::endl;
+std::cout << sum << std::endl;
 
 std::cerr<<elapsed_seconds.count()<<std::endl;
 
   return 0;
 }
+

@@ -38,8 +38,23 @@ public:
   template<typename TLS>
   void parfor (size_t beg, size_t end, size_t increment,
 	       std::function<void(TLS&)> before,
-	       std::function<void(int, TLS&)> f,
+	       std::function<void(double, TLS&)> f,
 	       std::function<void(TLS&)> after
+	       ) {
+    TLS tls;
+    before((double)tls);    
+    for (size_t i=beg; i<end; i+= increment) {
+      f(i, (double)tls);
+    }
+    after((double)tls);
+  }
+  
+
+template <typename testV>
+void parfor(size_t beg, size_t end, size_t increment,
+	       std::function<void(testV&)> before,
+	       std::function<void(double, testV&)> f,
+	       std::function<void(testV&)> after
 	       ) {
     TLS tls;
     before(tls);    
@@ -48,7 +63,6 @@ public:
     }
     after(tls);
   }
-  
-};
+  };
 
 #endif
