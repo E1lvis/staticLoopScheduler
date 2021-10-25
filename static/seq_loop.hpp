@@ -1,7 +1,7 @@
 #ifndef __SEQ_LOOP_H
 #define __SEQ_LOOP_H
 #include <thread>
-#include "static_sched.cpp"
+//#include "static_sched.cpp"
 
 #include <functional>
 
@@ -19,7 +19,9 @@ public:
       f(i);
     }
   }
-
+void helperAddToArray(float& Value, float *list, int i){
+list[i] = Value;
+}
   /// @brief execute the function f multiple times with different
   /// parameters possibly in parallel
   ///
@@ -42,23 +44,33 @@ public:
   std::vector<std::thread> mythreads;
   float results[100];
   template<typename TLS>
-  void parfor (size_t beg, size_t end, size_t increment,
+  void parfor (size_t beg, size_t end, size_t increment, int nThreads,
 	       std::function<void(TLS&)> before,
 	       std::function<void(int, TLS&)> f,
 	       std::function<void(TLS&)> after
 	       ) {
+    int count = 0;
+
     TLS tls;
-    before(tls);    
+    std::thread myThread(before(tls));    
     for (size_t i=beg; i<end; i+= increment) {
       f(i,tls);
-      std.thread myThread(helperAddToArray, tls, results, i);
+      std::thread myThread(helperAddToArray, tls, results, i);
       //std::thread myThread(inte)
       //std::thread mythread(f(i, tls));
+    count++;
+    if(count > end / nThreads){
+      std::thread myThread.pushback();
+      count = 0;
 
     }
-    after(tls);
+    }
+    std::thread myThread(after(tls));
   }
-  
+
+
 };
+
+
 
 #endif

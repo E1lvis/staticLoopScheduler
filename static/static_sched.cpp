@@ -306,6 +306,27 @@ double an = 0;
      
     int intensity = atoi(argv[5]);
 
+    float (*functionInUse)(float, int);
+
+    switch (functionid)
+    {
+    case 1:
+      functionInUse = f1;
+      break;
+    case 2:
+      functionInUse = f2;
+      break;
+    case 3:
+      functionInUse = f3;
+      break;
+    case 4:
+      functionInUse = f4;
+      break;
+    default:
+
+      break;
+    }
+
 std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
 //an = integrate(functionid, a, b, n, intensity);
@@ -336,21 +357,22 @@ double testVariable = 0;
     double results[100];
 */
     double sum = 0;
-     s1.parfor<float>(0, n, 1,
+     s1.parfor<float>(0, n, 1, nThreads,
 		 [&](float& tls) -> void{
 		   tls = 0;
 		 },
 		 [&](int i, float tls) -> void{
 		   //tls +=frac *functionInUse(a + (i+.5)*frac, intensity); 
-       //tls += integrateFunction(*functionInUse, frac, a, i, intensity);
+       tls += integrateFunction(*functionInUse, ((b-a)/n), a, i, intensity);
        //results[i] =  std::thread mythread(integrateFunction, f1, ((b-a)/n), a, i , intensity);
-       tls += integrateFunction (f1, ((b-a)/n), a, i , intensity);
+       //tls += integrateFunction(functionid, a, b, i , intensity);
        //std::cout<< "tls is equal to " << tls;
        //tls += 
       // double value = std::thread mythread(integrateFunction, *functionInUse, frac, a, i, intensity);
 		  },
 		 [&](float tls) -> void{
 		   sum += testVariable;
+
 		 }
 		 );
 
