@@ -19,7 +19,7 @@ public:
       f(i);
     }
   }
-void helperAddToArray(float& Value, float *list, int i){
+static void helperAddToArray(float& Value, float *list, int i){
 list[i] = Value;
 }
   /// @brief execute the function f multiple times with different
@@ -60,12 +60,12 @@ list[i] = Value;
       //std::thread mythread(f(i, tls));
     count++;
     if(count > end / nThreads){
-      std::thread myThread.pushback();
+      mythreads.push_back(std::move(myThread));
       count = 0;
 
     }
     }
-    std::thread myThread(after(tls));
+    myThread(after(tls));
   }
 
 

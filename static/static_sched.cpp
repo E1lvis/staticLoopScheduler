@@ -26,9 +26,7 @@ void helperIntergration(float (*f)(float, int), double frac, double a, int i, in
 
 } 
 
-void helperAddToArray(float& Value, float *list, int i){
-list[i] = Value;
-}
+
 
 float integrateFunction(float (*f)(float, int), double frac, double a, int i, int intensity ){
   return frac *f(a + (i+.5)*frac, intensity);
