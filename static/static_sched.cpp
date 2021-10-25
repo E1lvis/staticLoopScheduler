@@ -20,6 +20,15 @@ float f4(float x, int intensity);
 #ifdef __cplusplus
 }
 #endif
+//integrate and add to an array
+void helperIntergration(float (*f)(float, int), double frac, double a, int i, int intensity, float& valueToChange){
+ valueToChange = frac *f(a + (i+.5)*frac, intensity);
+
+} 
+
+void helperAddToArray(float& Value, float *list, int i){
+list[i] = Value;
+}
 
 float integrateFunction(float (*f)(float, int), double frac, double a, int i, int intensity ){
   return frac *f(a + (i+.5)*frac, intensity);
@@ -141,6 +150,8 @@ double integrate(int functionid, double a, double b, int n, int intensity) {
 
 
 }   
+
+
 
 double integrate2(int functionid, double a, double b, int n, int intensity, int numberOfThreads) {
 
@@ -298,7 +309,7 @@ double an = 0;
 std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
 //an = integrate(functionid, a, b, n, intensity);
-an = integrate2(functionid, a, b, n, intensity, nThreads);
+//an = integrate2(functionid, a, b, n, intensity, nThreads);
 double testVariable = 0;
  /* 
   int iterationCount = 0;
@@ -334,7 +345,7 @@ double testVariable = 0;
        //tls += integrateFunction(*functionInUse, frac, a, i, intensity);
        //results[i] =  std::thread mythread(integrateFunction, f1, ((b-a)/n), a, i , intensity);
        tls += integrateFunction (f1, ((b-a)/n), a, i , intensity);
-       std::cout<< "tls is equal to " << tls;
+       //std::cout<< "tls is equal to " << tls;
        //tls += 
       // double value = std::thread mythread(integrateFunction, *functionInUse, frac, a, i, intensity);
 		  },
@@ -347,7 +358,7 @@ std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clo
 
 std::chrono::duration<double> elapsed_seconds = end-start;
 
-std::cout << an << std::endl;
+//std::cout << an << std::endl;
 
 std::cerr<<elapsed_seconds.count()<<std::endl;
 //quesions

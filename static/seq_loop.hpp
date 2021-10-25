@@ -1,6 +1,7 @@
 #ifndef __SEQ_LOOP_H
 #define __SEQ_LOOP_H
 #include <thread>
+#include "static_sched.cpp"
 
 #include <functional>
 
@@ -39,7 +40,7 @@ public:
   //youre threading should be done in here 
   //tls will need to go into an array
   std::vector<std::thread> mythreads;
-
+  float results[100];
   template<typename TLS>
   void parfor (size_t beg, size_t end, size_t increment,
 	       std::function<void(TLS&)> before,
@@ -49,7 +50,11 @@ public:
     TLS tls;
     before(tls);    
     for (size_t i=beg; i<end; i+= increment) {
-      std::thread mythread(f(i, tls));
+      f(i,tls);
+      std.thread myThread(helperAddToArray, tls, results, i);
+      //std::thread myThread(inte)
+      //std::thread mythread(f(i, tls));
+
     }
     after(tls);
   }
