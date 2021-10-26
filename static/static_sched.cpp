@@ -288,7 +288,8 @@ double integrate2(int functionid, double a, double b, int n, int intensity, int 
 
 
 int main (int argc, char* argv[]) {
-SeqLoop s1;
+	std::cout << "at the top of main here ";
+	SeqLoop s1;
 
 double an = 0;
 
@@ -324,11 +325,11 @@ double an = 0;
 
       break;
     }
-
+    std::cout << "made it past the function to use check ";
 std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
 //an = integrate(functionid, a, b, n, intensity);
-//an = integrate2(functionid, a, b, n, intensity, nThreads);
+an = integrate2(functionid, a, b, n, intensity, nThreads);
 double testVariable = 0;
  /* 
   int iterationCount = 0;
@@ -355,13 +356,17 @@ double testVariable = 0;
     double results[100];
 */
     double sum = 0;
+    std::cout<< "have successfully created sum which is equal to " << sum << " ";
      s1.parfor<float>(0, n, 1, nThreads,
-		 [&](float tls[]){
-		   tls[0] = 0;
+		 [&](float& tls){
+		 std::cout<<"have enterd first part of structure ";
+		   tls = 0;
 		 },
-		[&](int i, float tls) ->void {
+		[&](int i, float& tls) ->void {
 		   //tls +=frac *functionInUse(a + (i+.5)*frac, intensity); 
        tls = integrateFunction(*functionInUse, ((b-a)/n), a, i, intensity);
+	std::cout << "tls is equal to " << tls << " ";
+       //return tls;
        //results[i] =  std::thread mythread(integrateFunction, f1, ((b-a)/n), a, i , intensity);
        //tls += integrateFunction(functionid, a, b, i , intensity);
        //std::cout<< "tls is equal to " << tls;
@@ -369,7 +374,7 @@ double testVariable = 0;
       // double value = std::thread mythread(integrateFunction, *functionInUse, frac, a, i, intensity);
 		  },
 		 [&](float tls) -> void{
-		   
+		  sum += tls; 
 
 		 }
 		 );
@@ -378,13 +383,13 @@ std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clo
 
 std::chrono::duration<double> elapsed_seconds = end-start;
 
-//std::cout << an << std::endl;
+std::cout << an << std::endl;
 
 std::cerr<<elapsed_seconds.count()<<std::endl;
 //quesions
 //how to make the tls object a float or double
 //trouble passing in values in thread, value must be invocable error gotten
 //cant really think of anythong else rn gl :)
-  return 0;
+
 }
 

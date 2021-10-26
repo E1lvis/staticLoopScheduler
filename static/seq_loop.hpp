@@ -45,19 +45,26 @@ list[i] = Value;
   std::vector<std::thread> mythreads;
   template<typename TLS>
   void parfor (size_t beg, size_t end, size_t increment, int nThreads,
-	       std::function<void(TLS[])> before,
+	       std::function<void(TLS&)> before,
 	       std::function<void(int, TLS&)> f,
 	       std::function<void(TLS&)> after
 	       ) {
+    int breakPoint = 0;
     int tlsToUse = 0;
     int count = 0;
     int iterations = (end - count)/nThreads;
     //each thread owns a tls so thread 0 has tls 0, iterate that thread its amount of times then
     //move to next thread at the end add them together
     TLS tls[nThreads];
-    before(tls);   
+   // std::thread myThread(before, std::ref(tls[tlsToUse]));
+    //before(tls[tlsToUse]);   
     for(int x = 0; x < nThreads; x++){
-      //mythreads.push_back(std::thread(f(i,tls));
+      std::thread myThread(before, std::ref(tls[tlsToUse]));
+	    //leftover iteration case
+      if(x == nThreads - 1){
+      iterations == end;
+      }
+	    //mythreads.push_back(std::thread(f(i,tls));
     //iterations = (n - count)/nThreads;
       for (size_t i=beg; i<iterations; i+= increment) {
       //f(i,tls);
@@ -65,15 +72,24 @@ list[i] = Value;
       //std::thread myThread(inte)
       
       //std::thread mythread(f(i, tls));
-      std::thread myThread(f(i,tls[tlsToUse]));
+      std::thread myThread(f,i,std::ref(tls[tlsToUse]));
       count++;
-
+      breakPoint++;
+      if(breakPoint + 1 == iterations){
+      //mythreads.push_back(std::move(myThread));
+      breakPoint =0;
+      break;
+      }
      /* if(count > end / nThreads){
         count = 0;
         mythreads.push_back(std::move(myThread));
 
       }*/
       }
+      
+      //std::thread myThread(after, std::ref(tls[tlsToUse]));
+      std::thread (after, std::ref(tls[tlsToUse]));  
+      mythreads.push_back(std::move(myThread));
       tlsToUse++;
     }
     
@@ -82,7 +98,10 @@ list[i] = Value;
         t.join();
       }
     }
-   after(tls);
+    //std::thread myThread(after, std::ref(tls[tlsToUse]));
+    //mythreads.push_back(std::move(myThread));
+
+   //after(tls[tlsToUse]);
   }
 
 
