@@ -41,31 +41,48 @@ list[i] = Value;
   /// on the TLS object. No two thread can execute after at the same time.
   //youre threading should be done in here 
   //tls will need to go into an array
+  
   std::vector<std::thread> mythreads;
-  float results[100];
   template<typename TLS>
   void parfor (size_t beg, size_t end, size_t increment, int nThreads,
-	       std::function<void(TLS&)> before,
+	       std::function<void(TLS[])> before,
 	       std::function<void(int, TLS&)> f,
 	       std::function<void(TLS&)> after
 	       ) {
+    int tlsToUse = 0;
     int count = 0;
-
-    TLS tls;
-    std::thread myThread(before(tls));    
-    for (size_t i=beg; i<end; i+= increment) {
-      f(i,tls);
-      std::thread myThread(helperAddToArray, tls, results, i);
+    int iterations = (end - count)/nThreads;
+    //each thread owns a tls so thread 0 has tls 0, iterate that thread its amount of times then
+    //move to next thread at the end add them together
+    TLS tls[nThreads];
+    before(tls);   
+    for(int x = 0; x < nThreads; x++){
+      //mythreads.push_back(std::thread(f(i,tls));
+    //iterations = (n - count)/nThreads;
+      for (size_t i=beg; i<iterations; i+= increment) {
+      //f(i,tls);
+      //std::thread myThread(helperAddToArray, tls, results, i);
       //std::thread myThread(inte)
+      
       //std::thread mythread(f(i, tls));
-    count++;
-    if(count > end / nThreads){
-      mythreads.push_back(std::move(myThread));
-      count = 0;
+      std::thread myThread(f(i,tls[tlsToUse]));
+      count++;
 
+     /* if(count > end / nThreads){
+        count = 0;
+        mythreads.push_back(std::move(myThread));
+
+      }*/
+      }
+      tlsToUse++;
     }
+    
+    for(std::thread &t: mythreads){
+      if(t.joinable()){
+        t.join();
+      }
     }
-    myThread(after(tls));
+   after(tls);
   }
 
 
