@@ -29,7 +29,7 @@ void helperIntergration(float (*f)(float, int), double frac, double a, int i, in
 
 
 float integrateFunction(float (*f)(float, int), double frac, double a, int i, int intensity ){
-  return frac *f(a + (i+.5)*frac, intensity);
+  return f(a + (i+0.5)*frac, intensity) * frac;
 }
 
 void integrateFunction(float (*f)(float, int), double frac, double a, int i, int intensity, float& valueToChange ){
@@ -254,7 +254,7 @@ if (id == 1) {
 
 
 int main (int argc, char* argv[]) {
-	std::cout << "im here ";
+	
 	
 SeqLoop s1;
 
@@ -298,20 +298,20 @@ std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_c
 //an = integrate(functionid, a, b, n, intensity);
 //an = integrate2(functionid, a, b, n, intensity, nThreads);
 double testVariable = 0;
-//std::cout<< "working here now "; 
     double sum = 0;
-     s1.parfor<float>(0, n, 1, nThreads,
+   
+    s1.parfor<float>(1, n, 1, nThreads,
 		 [&](float& tls){
-		 //std::cout<<"we are in here ";  
 		 tls = 0;
 
 		 },
 		[&](int i, float& tls) ->void {
-       tls = integrateFunction(*functionInUse, ((b-a)/n), a, i, intensity);
+      	
+		 tls += integrateFunction(*functionInUse, ((b-a)/n), a, i, intensity);
 		  },
-		 [&](float tls) -> void{
+		 [&](float& tls) -> void{
 		   sum += tls;
-
+			//std::cout<< " |sum: "<< sum << " |";
 		 }
 		 );
 
@@ -319,10 +319,11 @@ std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clo
 
 std::chrono::duration<double> elapsed_seconds = end-start;
 
+//std::cout<< "made it here: ";
 std::cout << sum << std::endl;
 
 std::cerr<<elapsed_seconds.count()<<std::endl;
-
-  return 0;
+	
+  return sum;
 }
 

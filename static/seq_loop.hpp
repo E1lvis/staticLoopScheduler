@@ -49,102 +49,102 @@ list[i] = Value;
 	       std::function<void(int, TLS&)> f,
 	       std::function<void(TLS&)> after
 	       ) {
-    std::cout<< "|have started the construct| ";
-    std::cout<< "end and nThreads = " << end << " " << nThreads << " ";
+//    std::cout<< "|have started the construct| ";
+  //  std::cout<< "end and nThreads = " << end << " " << nThreads << " ";
     int tlsToUse = 0;
     int count = 0;
     int iterations = (end)/nThreads;
-    std::cout << "|iterations = " << iterations << " |";
-    int breakPoint = 0;
+    //std::cout << "|iterations = " << iterations << " |";
+    int breakPoint = 1;
     TLS tls[nThreads];
-    std::cout<<"|Checkpoint 1| ";
+    
+    //std::cout<<"|Checkpoint 1, TLS has been made tls0 =  "<< tls[0] << " |";
     
     
 
     for(int x = 0; x < nThreads; x++){
-	if(x == 0){
-	std::cout << "|first loop checkpoint| ";
 
-	}
- tlsToUse = x;
-      std::cout<<"| x and tlsToUse " << x << " " << tlsToUse << " |";
+    	    if(x == 0){
+//	std::cout << "|first loop checkpoint| ";
 
-	for(int z = 0; z < nThreads; z++){
-		std::thread tThread(before, std::ref(tls[tlsToUse]));
-		mythreads.push_back(std::move(tThread));
-	}
+	    }
 
-  	//mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
-	for(std::thread &th: mythreads){
-    if(th.joinable()){
-      th.join();
-      }
-      }
-   
-	     	//mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
-	//std::thread th1(before, std::ref(tls[tlsToUse]));
+	    tlsToUse = x;
+
+	    //    std::cout<<"| x and tlsToUse " << x << " " << tlsToUse << " |";
+
+
+  	mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
 	
-      std::cout << "|Before thread checkpoint, TLS = " << tls[tlsToUse] << " | ";
+	std::thread join();
+	     	
+	//mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
+	//std::thread th1(before, std::ref(tls[tlsToUse]));
+
+	//th1.join();
+
+  //	std::cout << "|Before thread checkpoint, TLS = " << tls[tlsToUse] << " | ";
       
       for (size_t i=beg; i<end; i+= increment) {
- //i think we are losing the memory location, have tried referencing through address but that doesnt work either    
-      std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
-      //f(i,tls[tlsToUse]);
+ 
+ // std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
      
- for(int u = 0; u < nThreads; u++){
-                std::thread tThread(f, i, std::ref(tls[tlsToUse]));
- 		 mythreads.push_back(std::move(tThread));
-       
- }
-
+     
 	
 
-      //mythreads.push_back (std::thread(f, i, std::ref(tls[tlsToUse])));
+	      mythreads.push_back (std::thread(f, i, std::ref(tls[tlsToUse])));
  for(std::thread &th: mythreads){
       if(th.joinable()){
       th.join();
       }
       }
 
+ std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
+	 
       count++;
       breakPoint++;
-      /*if(breakPoint + 1 == iterations){
+/*     if(breakPoint == iterations){
         breakPoint = 0;
-	std::cout <<"break at: " << iterations << " ";
-        // mythreads.push_back(std::move(myThread));
+//	std::cout <<"break at: " << iterations << " ";
+     //    mythreads.push_back(std::move(myThread));
         break;
 
-      }*/
-     /* if(count > end / nThreads){
+      }
+ */
+    /* if(count > end / nThreads){
         count = 0;
         mythreads.push_back(std::move(myThread));
 
       }*/
       }
       
-	for(int u = 0; u <nThreads; u++){
+//	std::thread th3(after, std::ref(tls[tlsToUse]));
+//	th3.join();
+
+	/*for(int u = 0; u <nThreads; u++){
 		std::thread tThread(after, std::ref(tls[tlsToUse]));
 		 mythreads.push_back(std::move(tThread));
 
 	}
-
-      //mythreads.push_back(std::thread(after, std::ref(tls[tlsToUse])));
-	 for(std::thread &th: mythreads){
+*/
+      mythreads.push_back(std::thread(after, std::ref(tls[tlsToUse])));
+/*	 for(std::thread &th: mythreads){
       if(th.joinable()){
       th.join();
       }
       }
-	
+*/	
     //tlsToUse = x;
      // std::cout<<"| x and tlsToUse " << x << " " << tlsToUse << " |";
     }
     
-    
+  
     for(std::thread &t: mythreads){
       if(t.joinable()){
         t.join();
       }
     }
+    
   }
 
 
