@@ -49,57 +49,102 @@ list[i] = Value;
 	       std::function<void(int, TLS&)> f,
 	       std::function<void(TLS&)> after
 	       ) {
+    std::cout<< "|have started the construct| ";
+    std::cout<< "end and nThreads = " << end << " " << nThreads << " ";
     int tlsToUse = 0;
     int count = 0;
     int iterations = (end)/nThreads;
+    std::cout << "|iterations = " << iterations << " |";
     int breakPoint = 0;
-    //each thread owns a tls so thread 0 has tls 0, iterate that thread its amount of times then
-    //move to next thread at the end add them together
     TLS tls[nThreads];
-    //std::thread myThread(before, std::ref(tls[tlsToUse]));
-    //before(tls[tlsToUse]);   
+    std::cout<<"|Checkpoint 1| ";
+    
+    
+
     for(int x = 0; x < nThreads; x++){
-      std::thread myThread(before, std::ref(tls[tlsToUse]));
-      //leftover iteration case
-      if (x == nThreads - 1){
-        iterations == end;
+	if(x == 0){
+	std::cout << "|first loop checkpoint| ";
+
+	}
+ tlsToUse = x;
+      std::cout<<"| x and tlsToUse " << x << " " << tlsToUse << " |";
+
+	for(int z = 0; z < nThreads; z++){
+		std::thread tThread(before, std::ref(tls[tlsToUse]));
+		mythreads.push_back(std::move(tThread));
+	}
+
+  	//mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
+	for(std::thread &th: mythreads){
+    if(th.joinable()){
+      th.join();
       }
-      //mythreads.push_back(std::thread(f(i,tls));
-    //iterations = (n - count)/nThreads;
-      for (size_t i=count; i<end; i+= increment) {
-      //f(i,tls);
-      //std::thread myThread(helperAddToArray, tls, results, i);
-      //std::thread myThread(inte)
+      }
+   
+	     	//mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
+	//std::thread th1(before, std::ref(tls[tlsToUse]));
+	
+      std::cout << "|Before thread checkpoint, TLS = " << tls[tlsToUse] << " | ";
       
-      //std::thread mythread(f(i, tls));
-      std::thread myThread(f, i, std::ref(tls[tlsToUse]));
+      for (size_t i=beg; i<end; i+= increment) {
+ //i think we are losing the memory location, have tried referencing through address but that doesnt work either    
+      std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
+      //f(i,tls[tlsToUse]);
+     
+ for(int u = 0; u < nThreads; u++){
+                std::thread tThread(f, i, std::ref(tls[tlsToUse]));
+ 		 mythreads.push_back(std::move(tThread));
+       
+ }
+
+	
+
+      //mythreads.push_back (std::thread(f, i, std::ref(tls[tlsToUse])));
+ for(std::thread &th: mythreads){
+      if(th.joinable()){
+      th.join();
+      }
+      }
+
       count++;
       breakPoint++;
-      if(breakPoint + 1 == iterations){
+      /*if(breakPoint + 1 == iterations){
         breakPoint = 0;
+	std::cout <<"break at: " << iterations << " ";
         // mythreads.push_back(std::move(myThread));
         break;
 
-      }
+      }*/
      /* if(count > end / nThreads){
         count = 0;
         mythreads.push_back(std::move(myThread));
 
       }*/
       }
-      std::thread(after, std::ref(tls[tlsToUse]));
-      mythreads.push_back(std::move(myThread));
-      tlsToUse++;
+      
+	for(int u = 0; u <nThreads; u++){
+		std::thread tThread(after, std::ref(tls[tlsToUse]));
+		 mythreads.push_back(std::move(tThread));
+
+	}
+
+      //mythreads.push_back(std::thread(after, std::ref(tls[tlsToUse])));
+	 for(std::thread &th: mythreads){
+      if(th.joinable()){
+      th.join();
+      }
+      }
+	
+    //tlsToUse = x;
+     // std::cout<<"| x and tlsToUse " << x << " " << tlsToUse << " |";
     }
+    
     
     for(std::thread &t: mythreads){
       if(t.joinable()){
         t.join();
       }
     }
-  // std::thread myThread(after, std::ref(tls[tlsToUse]));
-    //mythreads.push_back(std::move(myThread));
-   //after(tls[tlsToUse]);
   }
 
 

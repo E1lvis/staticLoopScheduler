@@ -154,7 +154,7 @@ double integrate(int functionid, double a, double b, int n, int intensity) {
 double integrate2(int functionid, double a, double b, int n, int intensity, int numberOfThreads) {
 
     SeqLoop s1;
-
+	std::cout << "we are here ";
 
 
 
@@ -184,8 +184,7 @@ double integrate2(int functionid, double a, double b, int n, int intensity, int 
       break;
     }
      
-	
-  /*if (id == 1) {
+if (id == 1) {
        
        s1.parfor(0, n, 1,
 	    [&](int i) -> void{
@@ -229,9 +228,9 @@ double integrate2(int functionid, double a, double b, int n, int intensity, int 
     else {
         
         return 1;
-    }*/
+    }
 
-    s1.parfor<float>(0, n, 1, numberOfThreads,
+  /*  s1.parfor<float>(0, n, 1, numberOfThreads,
 		 [&](float& tls){
 		   tls = 0;
 		 },
@@ -243,7 +242,7 @@ double integrate2(int functionid, double a, double b, int n, int intensity, int 
 		 [&](float tls) -> void{
 		   sum += tls;
 
-		 });
+		 });*/
 
     return sum;
 
@@ -255,6 +254,8 @@ double integrate2(int functionid, double a, double b, int n, int intensity, int 
 
 
 int main (int argc, char* argv[]) {
+	std::cout << "im here ";
+	
 SeqLoop s1;
 
 double an = 0;
@@ -295,34 +296,30 @@ double an = 0;
 std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
 //an = integrate(functionid, a, b, n, intensity);
-an = integrate2(functionid, a, b, n, intensity, nThreads);
+//an = integrate2(functionid, a, b, n, intensity, nThreads);
 double testVariable = 0;
- 
+//std::cout<< "working here now "; 
     double sum = 0;
-    /* s1.parfor<float>(0, n, 1, nThreads,
+     s1.parfor<float>(0, n, 1, nThreads,
 		 [&](float& tls){
-		   tls = 0;
+		 //std::cout<<"we are in here ";  
+		 tls = 0;
+
 		 },
 		[&](int i, float& tls) ->void {
-		   //tls +=frac *functionInUse(a + (i+.5)*frac, intensity); 
        tls = integrateFunction(*functionInUse, ((b-a)/n), a, i, intensity);
-       //results[i] =  std::thread mythread(integrateFunction, f1, ((b-a)/n), a, i , intensity);
-       //tls += integrateFunction(functionid, a, b, i , intensity);
-       //std::cout<< "tls is equal to " << tls;
-       //tls += 
-      // double value = std::thread mythread(integrateFunction, *functionInUse, frac, a, i, intensity);
 		  },
 		 [&](float tls) -> void{
 		   sum += tls;
 
 		 }
-		 );*/
+		 );
 
 std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
 std::chrono::duration<double> elapsed_seconds = end-start;
 
-std::cout << an << std::endl;
+std::cout << sum << std::endl;
 
 std::cerr<<elapsed_seconds.count()<<std::endl;
 
