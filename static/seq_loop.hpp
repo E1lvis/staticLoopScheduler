@@ -56,100 +56,49 @@ list[i] = Value;
     int iterations = (end)/nThreads;
     //std::cout << "|iterations = " << iterations << " |";
     int breakPoint = 1;
+
     TLS tls[nThreads];
     
     //std::cout<<"|Checkpoint 1, TLS has been made tls0 =  "<< tls[0] << " |";
     
-    
-
     for(int x = 0; x < nThreads; x++){
-
-    	    if(x == 0){
-//	std::cout << "|first loop checkpoint| ";
-
-	    }
-
+    	  
 	    tlsToUse = x;
 
-	    //    std::cout<<"| x and tlsToUse " << x << " " << tlsToUse << " |";
-
-
-  	mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
- for(std::thread &th: mythreads){
-      if(th.joinable()){
-      th.join();
-      }
-      }
-	
-	//std::thread join();
-	     	
-	//mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
-	//std::thread th1(before, std::ref(tls[tlsToUse]));
-
-	//th1.join();
-
-  //	std::cout << "|Before thread checkpoint, TLS = " << tls[tlsToUse] << " | ";
+	    //std::cout<<"| x and tlsToUse " << x << " " << tlsToUse << " |";
+  	  //mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
       
-      for (size_t i=beg; i<=end; i+= increment) {
+      before(tls[tlsToUse]);
+      //need to call herlper function which will help with running the integrations, local start/local end was discussed
+      
+      //mythreads.push_back(std::thread(f, i, std::ref(tls[tlsToUse])));
+      //std::cout << "|Before thread checkpoint, TLS = " << tls[tlsToUse] << " | ";
+      
+  //for (size_t i=beg; i<=end; i+= increment) {}
  
- // std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
+  //std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
      
-     
-	
-
-	      mythreads.push_back (std::thread(f, i, std::ref(tls[tlsToUse])));
- for(std::thread &th: mythreads){
-      if(th.joinable()){
-      th.join();
-      }
-      }
-
- std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
+      std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
 	 
       count++;
       breakPoint++;
-/*     if(breakPoint == iterations){
+      /*     if(breakPoint == iterations){
         breakPoint = 0;
-//	std::cout <<"break at: " << iterations << " ";
-     //    mythreads.push_back(std::move(myThread));
+      //	std::cout <<"break at: " << iterations << " ";
+      //    mythreads.push_back(std::move(myThread));
         break;
 
       }
- */
-    /* if(count > end / nThreads){
-        count = 0;
-        mythreads.push_back(std::move(myThread));
-
-      }*/
-      }
-      
-//	std::thread th3(after, std::ref(tls[tlsToUse]));
-//	th3.join();
-
-	/*for(int u = 0; u <nThreads; u++){
-		std::thread tThread(after, std::ref(tls[tlsToUse]));
-		 mythreads.push_back(std::move(tThread));
-
-	}
-*/
-      mythreads.push_back(std::thread(after, std::ref(tls[tlsToUse])));
-/*	 for(std::thread &th: mythreads){
-      if(th.joinable()){
-      th.join();
-      }
-      }
-*/	
-    //tlsToUse = x;
+      */
      // std::cout<<"| x and tlsToUse " << x << " " << tlsToUse << " |";
     }
-    
-  
+     
     for(std::thread &t: mythreads){
       if(t.joinable()){
         t.join();
       }
     }
-    
+    mythreads.push_back(std::thread(after, std::ref(tls[tlsToUse])));
   }
 
 
