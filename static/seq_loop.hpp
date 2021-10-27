@@ -75,8 +75,13 @@ list[i] = Value;
 
 
   	mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
+ for(std::thread &th: mythreads){
+      if(th.joinable()){
+      th.join();
+      }
+      }
 	
-	std::thread join();
+	//std::thread join();
 	     	
 	//mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
 	//std::thread th1(before, std::ref(tls[tlsToUse]));
@@ -85,7 +90,7 @@ list[i] = Value;
 
   //	std::cout << "|Before thread checkpoint, TLS = " << tls[tlsToUse] << " | ";
       
-      for (size_t i=beg; i<end; i+= increment) {
+      for (size_t i=beg; i<=end; i+= increment) {
  
  // std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
      

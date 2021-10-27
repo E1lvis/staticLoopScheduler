@@ -28,8 +28,8 @@ void helperIntergration(float (*f)(float, int), double frac, double a, int i, in
 
 
 
-float integrateFunction(float (*f)(float, int), double frac, double a, int i, int intensity ){
-  return f(a + (i+0.5)*frac, intensity) * frac;
+double integrateFunction(float (*f)(float, int), double frac, float a, int i, int intensity ){
+	return f(a + (i+0.5)*frac, intensity) * frac;
 }
 
 void integrateFunction(float (*f)(float, int), double frac, double a, int i, int intensity, float& valueToChange ){
@@ -51,16 +51,14 @@ double integrate(int functionid, double a, double b, int n, int intensity) {
   
      
      
-     //height of rectangle is calculated by f(a+(i-1*frac)) where frac is the width and i is set to 1 incrementing
-     //could also use switch but i am rusty
-    /*if (id == 1) {
+    if (id == 1) {
        
-        for (int i = 1; i <= n; i++) {
+      //  for (int i = n; i < n+1; i++) {
             
-            second = frac * f1(a + (i-1)*frac, intensity);
+         second = frac * f1(a + (n+0.5)*frac, intensity);
           
             sum = sum + second;
-        }
+        //}
     }
     else if (id == 2) {
         for (int i = 1; i <= n; i++) {
@@ -87,55 +85,6 @@ double integrate(int functionid, double a, double b, int n, int intensity) {
 
         sum = sum + second;
     }
-    }
-    else {
-        
-        return 1;
-    }*/
-
-	
-    if (id == 1) {
-       
-        s1.parfor(0, n, 1,
-	    [&](int i) /*-> void*/{
-	
-	      sum += frac *f1(a + (i+.5)*frac, intensity); 
-         	//std::cout << "  " << sum; 
-            //sum = sum + second;
-	    }
-	    );
-//	sum = sum *frac;
-   	//std::cout<< "for f1 sum is: " << sum; 
-    }
-    else if (id == 2) {
-        s1.parfor(0, n, 1,
-	    [&](int i) -> void{
-	      second = frac * f2(a + (i+.5)*frac, intensity);
-          
-            sum = sum + second;
-	    }
-	    );
-        //double sd = 333.333 - sum;
-	//sum = sum +sd;
-	//std::cout<< "for f2 sum is: " << sum;
-    }
-    else if (id == 3) {
-    s1.parfor(0, n, 1,
-	    [&](int i) -> void{
-	      second = frac * f3(a + (i+.5)*frac, intensity);
-          
-            sum = sum + second;
-	    }
-	    );
-    }
-    else if (id == 4) {
-    s1.parfor(0, n, 1,
-	    [&](int i) -> void{
-	      second = frac * f4(a + (i+.5)*frac, intensity);
-          
-            sum = sum + second;
-	    }
-	    );
     }
     else {
         
@@ -292,7 +241,7 @@ double an = 0;
 
       break;
     }
-
+double frac = (b-a)/n;
 std::chrono::time_point<std::chrono::system_clock> start = std::chrono::system_clock::now();
 
 //an = integrate(functionid, a, b, n, intensity);
@@ -307,7 +256,8 @@ double testVariable = 0;
 		 },
 		[&](int i, float& tls) ->void {
       	
-		 tls += integrateFunction(*functionInUse, ((b-a)/n), a, i, intensity);
+//		tls+= integrate(functionid, a, b i, intensity); 
+		tls += integrateFunction(*functionInUse, frac, a, i, intensity);
 		  },
 		 [&](float& tls) -> void{
 		   sum += tls;
