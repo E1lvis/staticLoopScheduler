@@ -22,7 +22,25 @@ public:
 static void helperAddToArray(float& Value, float *list, int i){
 list[i] = Value;
 }
-  /// @brief execute the function f multiple times with different
+ 
+ 
+ static void helperFunction(void(*f)(int, float&),int end, int start, float tls){
+
+        for(start; start < end; start++){
+        f(start, std::ref(tls));
+        }
+
+  
+ }
+
+static void testFunction(int x, float& tls, void (*func)(int, float&)){
+	std::cout<< "We work ";
+}
+
+
+  // @brief execute the function f multipl
+  //
+  //e times with different
   /// parameters possibly in parallel
   ///
   /// f will be executed multiple times with parameters starting at
@@ -46,11 +64,16 @@ list[i] = Value;
   template<typename TLS>
   void parfor (size_t beg, size_t end, size_t increment, int nThreads,
 	       std::function<void(TLS&)> before,
-	       std::function<void(int, TLS&)> f,
+	       std::function<void(int, TLS&)> func,
 	       std::function<void(TLS&)> after
 	       ) {
 //    std::cout<< "|have started the construct| ";
   //  std::cout<< "end and nThreads = " << end << " " << nThreads << " ";
+    
+    int start = beg;  
+    int en = end;
+ 	  
+	  
     int tlsToUse = 0;
     int count = 0;
     int iterations = (end)/nThreads;
@@ -71,14 +94,17 @@ list[i] = Value;
       before(tls[tlsToUse]);
       //need to call herlper function which will help with running the integrations, local start/local end was discussed
       
-      //mythreads.push_back(std::thread(f, i, std::ref(tls[tlsToUse])));
+     // mythreads.push_back(std::thread(helperFunction, f,en, start, tls[tlsToUse]));
+     mythreads.push_back(std::thread(testFunction, start, std::ref(tls[tlsToUse]), func));
+
+      //mythreads.push_back(std::thread(f, beg, std::ref(tls[tlsToUse])));
       //std::cout << "|Before thread checkpoint, TLS = " << tls[tlsToUse] << " | ";
       
   //for (size_t i=beg; i<=end; i+= increment) {}
  
   //std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
      
-      std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
+      //std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
 	 
       count++;
       breakPoint++;
@@ -100,6 +126,7 @@ list[i] = Value;
     }
     mythreads.push_back(std::thread(after, std::ref(tls[tlsToUse])));
   }
+
 
 
 };
