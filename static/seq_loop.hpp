@@ -24,17 +24,24 @@ list[i] = Value;
 }
  
  
- static void helperFunction(void(*f)(int, float&),int end, int start, float tls){
+ static float helperFunction(void(*f)(int, float&),int end, int start, float tls){
 
         for(start; start < end; start++){
         f(start, std::ref(tls));
         }
 
-  
+  return tls;
  }
 
-static void testFunction(int x, float& tls, void (*func)(int, float&)){
-	std::cout<< "We work ";
+static void testFunction(int x, int y, double& tls, std::function<void(int, double&)>f){
+
+	//std::cout<< "We work ";
+
+	for(x; x < y; x++){
+        f(x, tls);
+  	//std::cout<< "| tls = " << tls << " |";
+  	}
+
 }
 
 
@@ -64,7 +71,7 @@ static void testFunction(int x, float& tls, void (*func)(int, float&)){
   template<typename TLS>
   void parfor (size_t beg, size_t end, size_t increment, int nThreads,
 	       std::function<void(TLS&)> before,
-	       std::function<void(int, TLS&)> func,
+	       std::function<void(int, TLS&)> f,
 	       std::function<void(TLS&)> after
 	       ) {
 //    std::cout<< "|have started the construct| ";
@@ -82,49 +89,34 @@ static void testFunction(int x, float& tls, void (*func)(int, float&)){
 
     TLS tls[nThreads];
     
-    //std::cout<<"|Checkpoint 1, TLS has been made tls0 =  "<< tls[0] << " |";
-    
     for(int x = 0; x < nThreads; x++){
     	  
 	    tlsToUse = x;
-
-	    //std::cout<<"| x and tlsToUse " << x << " " << tlsToUse << " |";
-  	  //mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse])));
       
-      before(tls[tlsToUse]);
-      //need to call herlper function which will help with running the integrations, local start/local end was discussed
-      
-     // mythreads.push_back(std::thread(helperFunction, f,en, start, tls[tlsToUse]));
-     mythreads.push_back(std::thread(testFunction, start, std::ref(tls[tlsToUse]), func));
-
-      //mythreads.push_back(std::thread(f, beg, std::ref(tls[tlsToUse])));
-      //std::cout << "|Before thread checkpoint, TLS = " << tls[tlsToUse] << " | ";
-      
-  //for (size_t i=beg; i<=end; i+= increment) {}
- 
-  //std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
+      //before(tls[tlsToUse]);
+     mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse]))); 
      
-      //std::cout << "|tls = "<< tls[tlsToUse] << " I = " << i << " |";
-	 
+     mythreads.push_back(std::thread(testFunction, start,end, std::ref(tls[tlsToUse]), f));
+    
+
+
+
       count++;
       breakPoint++;
-      /*     if(breakPoint == iterations){
-        breakPoint = 0;
-      //	std::cout <<"break at: " << iterations << " ";
-      //    mythreads.push_back(std::move(myThread));
-        break;
-
-      }
-      */
-     // std::cout<<"| x and tlsToUse " << x << " " << tlsToUse << " |";
     }
-     
+    //mythreads.push_back(std::thread(after, std::ref(tls[tlsToUse])));     
     for(std::thread &t: mythreads){
       if(t.joinable()){
         t.join();
       }
     }
     mythreads.push_back(std::thread(after, std::ref(tls[tlsToUse])));
+	  for(std::thread &t: mythreads){
+      if(t.joinable()){
+        t.join();
+      }
+    }
+
   }
 
 
