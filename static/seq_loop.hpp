@@ -35,19 +35,18 @@ list[i] = Value;
   return tls;
  }
 
-static void testFunction(int x, int y, double& tls, std::function<void(int, double&)>f, int breakPoint){
+static void testFunction(int x, int y, double& tls, std::function<void(int, double&)>f, int breakPoint ){
+	int counterTo = 0;
+
 	for(x; x < y; x++){
 	f(x, tls);
+  	
+	counterTo++;		
 	
-	
-	/*if8(count <! breakPoint){
-	localStart[] = x + 1;
+	if(counterTo == breakPoint - 1){
 	break;
-	std::cout<< "|| BREAKING ||";
-	
 	}
-	*/  
-	//std::cout<< "| tls = " << tls << " |";
+	  
   	}
 
 }
@@ -82,23 +81,16 @@ static void testFunction(int x, int y, double& tls, std::function<void(int, doub
 	       std::function<void(int, TLS&)> f,
 	       std::function<void(TLS&)> after
 	       ) {
-//    std::cout<< "|have started the construct| ";
-  //  std::cout<< "end and nThreads = " << end << " " << nThreads << " ";
     
-    //int start = beg;  
-    int en = end;
-    int tlsToUse = 0;
     int count = 0;
     int breakPoint = (end)/nThreads;
-    //std::cout << "|iterations = " << iterations << " |";
-    //int breakPoint = 1;
 
     TLS tls[nThreads];
-    //int localStart[nThreads];
+    
     std::vector<int> localStart;
     localStart.push_back(1);
-    //localStart[0] = beg; 
-     for(int j = 1; j < end; j++){
+    
+    for(int j = 1; j < end; j++){
      if(count == breakPoint - 1){
      count = 0;
      localStart.push_back(j+1);
@@ -108,39 +100,36 @@ static void testFunction(int x, int y, double& tls, std::function<void(int, doub
      }
 
     for(int x = 0; x < nThreads; x++){
-	    tlsToUse = x;
-      
-      //before(tls[tlsToUse]);
-     mythreads.push_back(std::thread(before, std::ref(tls[tlsToUse]))); 
+     
+     
+
+     mythreads.push_back(std::thread(before, std::ref(tls[x]))); 
      
      //partition work here
      
+     if(x == nThreads - 1){
+     breakPoint += end + (end%nThreads);
+     }
 
      //partition work before here
 
-     mythreads.push_back(std::thread(testFunction, localStart.at(x),end, std::ref(tls[tlsToUse]), f, breakPoint));
+     mythreads.push_back(std::thread(testFunction, localStart.at(x),end, std::ref(tls[x]), f, breakPoint  ));
     
 
 
-
-      //count++;
-      //breakPoint++;
-      //tlsToUse++;
     }
     //mythreads.push_back(std::thread(after, std::ref(tls[tlsToUse])));     
+
     for(std::thread &t: mythreads){
       if(t.joinable()){
         t.join();
       }
     }
-   /* for(int x = 0; x < nThreads; x++){
-    
+  
+    for(int x = 0; x < nThreads; x++) {
     mythreads.push_back(std::thread(after, std::ref(tls[x])));
-    
     }
-    */
     
-    mythreads.push_back(std::thread(after, std::ref(tls[tlsToUse])));
     for(std::thread &t: mythreads){
       if(t.joinable()){
         t.join();

@@ -36,67 +36,6 @@ void integrateFunction(float (*f)(float, int), double frac, double a, float i, i
   valueToChange = frac *f(a + (i+.5)*frac, intensity);
 }
 
-double integrate(int functionid, double a, double b, int n, int x, int intensity) {
-
-    SeqLoop s1;
-
-
-
-
-    double frac = (b - a) / n; //this is calculating the width
-    double second = 0; //this varibale is for the area
-    int id = functionid; //function 
-    double sum = 0; // sum of rectangles
-
-  
-     
-     
-    if (id == 1) {
-       
-      //  for (int i = n; i < n+1; i++) {
-            
-         second = frac * f1(a + (x+0.5)*frac, intensity);
-          
-            sum = sum + second;
-        //}
-    }
-    else if (id == 2) {
-        for (int i = 1; i <= n; i++) {
-
-            second = frac * f2(a + (i+05)*frac, intensity);
-		
-            sum = sum + second;
-        }
-        double sd = 333.333 - sum;
-	sum = sum +sd;
-    }
-    else if (id == 3) {
-    for (int i = 1; i <= n; i++) {
-
-        second = frac * f3(a + (i - 1) * frac, intensity);
-
-        sum = sum + second;
-    }
-    }
-    else if (id == 4) {
-    for (int i = 1; i <= n; i++) {
-
-        second = frac * f4(a + (i - 1) * frac, intensity);
-
-        sum = sum + second;
-    }
-    }
-    else {
-        
-        return 1;
-    }
-
-    return sum;
-
-
-
-
-}   
 
 
 
@@ -263,16 +202,12 @@ double testVariable = 0;
 		},
 		 [&](double& tls) -> void{
 		   sum += tls;
-			//std::cout<< " |sum: "<< sum << " |";
 		 }
 		 );
 
 std::chrono::time_point<std::chrono::system_clock> end = std::chrono::system_clock::now();
 
 std::chrono::duration<double> elapsed_seconds = end-start;
-
-//std::cout<< "made it here: ";
-
 
 
 std::cout << sum << std::endl;
