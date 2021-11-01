@@ -25,10 +25,12 @@ void helperIntergration(float (*f)(float, int), double frac, double a, int i, in
  valueToChange = frac * f(a + (i+0.05) * frac, intensity);
 
 } 
-
-
-double integrateFunction(float (*f)(float, int), float frac, float a, float i, int intensity ){
-	double value = (frac)*(f(a+(i+0.5)*frac, intensity));
+float integrateFunction(float (*f)(float, int), float frac, float a, float i, int intensity ){
+	
+	float value = (frac)*(f(a+(i+0.5)*frac, intensity));
+	if(f == f2){
+		//std::cout<<"| i =" << i << " |";
+	}
 	return value; //f(a + (i+0.5)*frac, intensity) * frac;
 }
 
@@ -39,7 +41,7 @@ void integrateFunction(float (*f)(float, int), double frac, double a, float i, i
 
 
 
-double integrate2(int functionid, double a, double b, int n, int intensity, int numberOfThreads, int end, int start) {
+float integrate2(int functionid, double a, double b, int n, int intensity, int numberOfThreads, int end, int start) {
 
     SeqLoop s1;
 	std::cout << "we are here ";
@@ -194,11 +196,7 @@ double testVariable = 0;
 
 		 },
 		[&](int i, double& tls) ->void {
-      		//float passThrough = (float)i;	
-		//tls += integrate(functionid, a, b, n, i, intensity);
-		//std::cout<< "|TLS before " << tls << " |"; 
 		tls += integrateFunction(*functionInUse, frac, a, i, intensity);
-		//std::cout<<"TLS after "<< tls<< " |";  
 		},
 		 [&](double& tls) -> void{
 		   sum += tls;
