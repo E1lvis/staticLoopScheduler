@@ -32,7 +32,7 @@ static void testFunction(int x, int y, double& tls, std::function<void(int, doub
   	
 	counterTo++;		
 	
-	if(counterTo == breakPoint - 1){
+	if(counterTo == breakPoint ){
 	break;
 	}
 	  
